@@ -1,0 +1,84 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+library ArrayUtils {
+    function sort(uint256[] storage arr) external {
+        if (arr.length <= 1) return; 
+
+        quickSort(arr, int(0), int(arr.length - 1));
+    }
+
+    function quickSort(uint256[] storage arr, int left, int right) internal {
+        int i = left;
+        int j = right;
+
+        if (i == j) return;
+
+        uint256 DATA = arr[uint256(left + (right - left) / 2)];
+
+        while (i <= j) {
+            while (arr[uint256(i)] < DATA) i++;
+            while (DATA < arr[uint256(j)]) j--;
+            if (i <= j) {
+                (arr[uint256(i)], arr[uint256(j)]) = (arr[uint256(j)], arr[uint256(i)]);
+                i++;
+                j--;
+            }
+        }
+
+        if (left < j) quickSort(arr, left, j);
+        if (i < right) quickSort(arr, i, right);
+    }
+
+    function removeDuplicates(uint256[] storage arr) external {
+        if (arr.length <= 1) return;
+        uint256 itemCount = 0;
+        uint256 lastIndex = 0;
+
+        for (uint256 i = 1; i < arr.length; i++) {
+            bool isDuplicate = false;
+
+            for (uint256 j = 0; j < i; j++) {
+                if (arr[i] == arr[j]) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+
+            if (!isDuplicate) {
+                itemCount++;
+                arr[++lastIndex] = arr[i];
+            }
+        }
+
+        while (arr.length > itemCount + 1) {
+            arr.pop();
+        }
+    }
+}
+
+contract ArrayManipulation {
+
+    using ArrayUtils for uint256[];
+
+    uint256[] public data;
+
+    function addData(uint256[] memory _data) external {
+    for (uint256 i = 0; i < _data.length; i++) {
+        data.push(_data[i]);
+    }
+    } 
+
+    function sortData() external {
+        data.sort();
+    }
+
+    function removeDuplicatesData() external {
+        data.removeDuplicates();
+    }
+
+
+    function viewSortedData() external view returns (uint256[] memory) {
+        return data;
+    }
+}
